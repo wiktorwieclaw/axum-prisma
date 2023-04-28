@@ -1,1 +1,5 @@
-pub async fn get() {}
+use axum::http::StatusCode;
+
+pub async fn get() -> StatusCode {
+    StatusCode::OK
+}
