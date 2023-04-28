@@ -1,16 +1,16 @@
 use axum::{http::StatusCode, response::IntoResponse};
 
 #[derive(Debug, thiserror::Error)]
-pub enum Error {
+pub enum ApiError {
     #[error("Not found")]
     NotFound,
     #[error(transparent)]
     Internal(#[from] eyre::Report),
 }
 
-pub type Result<T> = std::result::Result<T, Error>;
+pub type ApiResult<T> = std::result::Result<T, ApiError>;
 
-impl IntoResponse for Error {
+impl IntoResponse for ApiError {
     fn into_response(self) -> axum::response::Response {
         let status = match self {
             Self::NotFound => StatusCode::NOT_FOUND,
