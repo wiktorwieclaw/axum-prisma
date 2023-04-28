@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "crates/prisma-cli",
+    "crates/server",
+]
+resolver = "2"
