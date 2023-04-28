@@ -12,5 +12,5 @@ generator client {
  
 model User {
     id          String  @id @default(uuid())
-    displayName String
+    display_name String
 }

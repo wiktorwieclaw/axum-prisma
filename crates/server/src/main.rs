@@ -5,6 +5,7 @@ use prisma_client_rust as prisma;
 use std::{net::SocketAddr, sync::Arc};
 
 mod db;
+mod error;
 mod route;
 
 type Db = Arc<PrismaClient>;
@@ -33,6 +34,7 @@ fn new_router(db: Arc<PrismaClient>) -> axum::Router {
     use route::*;
     axum::Router::new()
         .route("/health", get(health::get))
-        .route("/user", get(user::get).post(user::post))
+        .route("/user", get(user::get_many).post(user::post))
+        .route("/user/:id", get(user::get_by_id))
         .with_state(db)
 }

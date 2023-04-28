@@ -2807,6 +2807,7 @@ dependencies = [
  "serde",
  "thiserror",
  "tokio",
+ "uuid",
 ]
 
 [[package]]
