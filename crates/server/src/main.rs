@@ -7,7 +7,7 @@ use std::{net::SocketAddr, sync::Arc};
 mod db;
 mod route;
 
-type Db = Arc<PrismaClient>;
+type Database = Arc<PrismaClient>;
 
 #[tokio::main]
 async fn main() -> eyre::Result<()> {
@@ -26,7 +26,7 @@ async fn main() -> eyre::Result<()> {
         .wrap_err("Failed to run the server")
 }
 
-fn new_router(db: Db) -> axum::Router {
+fn new_router(db: Database) -> axum::Router {
     use route::*;
     axum::Router::new()
         .route("/health", get(health::get))

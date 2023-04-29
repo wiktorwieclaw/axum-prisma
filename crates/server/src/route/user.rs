@@ -7,10 +7,10 @@ use eyre::WrapErr;
 use crate::{
     db,
     route::{Error, Result},
-    Db,
+    Database,
 };
 
-pub async fn get(State(db): State<Db>) -> Result<Json<Vec<db::user::Data>>> {
+pub async fn get(State(db): State<Database>) -> Result<Json<Vec<db::user::Data>>> {
     let users = db
         .user()
         .find_many(vec![])
@@ -21,7 +21,7 @@ pub async fn get(State(db): State<Db>) -> Result<Json<Vec<db::user::Data>>> {
 }
 
 pub async fn get_by_id(
-    State(db): State<Db>,
+    State(db): State<Database>,
     Path(id): Path<uuid::Uuid>,
 ) -> Result<Json<db::user::Data>> {
     let user = db
@@ -39,7 +39,10 @@ pub struct PostReq {
     name: String,
 }
 
-pub async fn post(State(db): State<Db>, Json(req): Json<PostReq>) -> Result<Json<db::user::Data>> {
+pub async fn post(
+    State(db): State<Database>,
+    Json(req): Json<PostReq>,
+) -> Result<Json<db::user::Data>> {
     let user = db
         .user()
         .create(req.name, vec![])
