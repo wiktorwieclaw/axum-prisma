@@ -9,6 +9,6 @@ generator client {
 }
  
 model User {
-    id           String  @id @default(uuid())
-    display_name String
+    id   String  @id @default(uuid())
+    name String
 }
