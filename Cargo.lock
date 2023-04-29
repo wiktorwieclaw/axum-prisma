@@ -2824,6 +2824,7 @@ dependencies = [
  "eyre",
  "prisma-client-rust",
  "serde",
+ "serde_json",
  "thiserror",
  "tokio",
  "uuid",

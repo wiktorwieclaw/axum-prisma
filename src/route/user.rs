@@ -11,32 +11,35 @@ use crate::{
 };
 
 #[derive(serde::Deserialize)]
-pub struct CreateInput {
+pub struct NewUser {
     name: String,
     surname: String,
 }
 
 #[derive(serde::Deserialize)]
-pub struct PatchInput {
+pub struct UpdateUser {
     name: Option<String>,
     surname: Option<String>,
 }
 
 #[axum::debug_handler]
-pub async fn get(State(db): State<Database>) -> Result<Json<Vec<db::user::Data>>> {
+pub async fn get(
+    State(db): State<Database>,
+) -> Result<Json<Vec<db::user::Data>>> {
     let users = db
         .user()
         .find_many(vec![])
         .exec()
         .await
         .wrap_err("Failed to get users from the database")?;
+
     Ok(Json::from(users))
 }
 
 #[axum::debug_handler]
 pub async fn get_by_id(
-    Path(id): Path<uuid::Uuid>,
     State(db): State<Database>,
+    Path(id): Path<uuid::Uuid>,
 ) -> Result<Json<db::user::Data>> {
     let user = db
         .user()
@@ -45,13 +48,14 @@ pub async fn get_by_id(
         .await
         .wrap_err("Failed to get user from the database")?;
     let user = user.ok_or(Error::NotFound)?;
+
     Ok(Json::from(user))
 }
 
 #[axum::debug_handler]
 pub async fn post(
     State(db): State<Database>,
-    Json(input): Json<CreateInput>,
+    Json(input): Json<NewUser>,
 ) -> Result<Json<db::user::Data>> {
     let user = db
         .user()
@@ -59,6 +63,7 @@ pub async fn post(
         .exec()
         .await
         .wrap_err("Failed to insert new user into the database")?;
+
     Ok(Json::from(user))
 }
 
@@ -66,7 +71,7 @@ pub async fn post(
 pub async fn put(
     State(db): State<Database>,
     Path(id): Path<uuid::Uuid>,
-    Json(input): Json<CreateInput>,
+    Json(input): Json<NewUser>,
 ) -> Result<Json<db::user::Data>> {
     let user = db
         .user()
@@ -88,7 +93,7 @@ pub async fn put(
 pub async fn patch(
     State(db): State<Database>,
     Path(id): Path<uuid::Uuid>,
-    Json(input): Json<PatchInput>,
+    Json(input): Json<UpdateUser>,
 ) -> Result<Json<db::user::Data>> {
     let user = db
         .user()
