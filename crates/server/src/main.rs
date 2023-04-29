@@ -11,11 +11,11 @@ type Database = Arc<PrismaClient>;
 
 #[tokio::main]
 async fn main() -> eyre::Result<()> {
-    let db = PrismaClient::_builder()
-        .build()
-        .await
-        .wrap_err("Failed to create Prisma client")?;
-    let db = Arc::new(db);
+    let db = Arc::new(
+        db::new_client()
+            .await
+            .wrap_err("Failed to create Prisma client")?,
+    );
 
     let router = new_router(db);
 
@@ -31,6 +31,9 @@ fn new_router(db: Database) -> axum::Router {
     axum::Router::new()
         .route("/health", get(health::get))
         .route("/user", get(user::get).post(user::post))
-        .route("/user/:id", get(user::get_by_id))
+        .route(
+            "/user/:id",
+            get(user::get_by_id).put(user::put).patch(user::patch),
+        )
         .with_state(db)
 }
