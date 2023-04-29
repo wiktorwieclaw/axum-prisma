@@ -1,9 +1,9 @@
 use axum::routing::get;
 use db::PrismaClient;
 use eyre::WrapErr;
-use prisma_client_rust as prisma;
 use std::{net::SocketAddr, sync::Arc};
 
+#[allow(warnings)]
 mod db;
 mod error;
 mod route;
@@ -12,7 +12,8 @@ type Db = Arc<PrismaClient>;
 
 #[tokio::main]
 async fn main() -> eyre::Result<()> {
-    let db = new_db("database-url".into())
+    let db = PrismaClient::_builder()
+        .build()
         .await
         .wrap_err("Failed to create Prisma client")?;
     let db = Arc::new(db);
@@ -26,15 +27,11 @@ async fn main() -> eyre::Result<()> {
         .wrap_err("Failed to run the server")
 }
 
-async fn new_db(url: String) -> Result<db::PrismaClient, prisma::NewClientError> {
-    PrismaClient::_builder().with_url(url).build().await
-}
-
-fn new_router(db: Arc<PrismaClient>) -> axum::Router {
+fn new_router(db: Db) -> axum::Router {
     use route::*;
     axum::Router::new()
         .route("/health", get(health::get))
-        .route("/user", get(user::get_many).post(user::post))
+        .route("/user", get(user::get).post(user::post))
         .route("/user/:id", get(user::get_by_id))
         .with_state(db)
 }

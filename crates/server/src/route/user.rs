@@ -5,12 +5,12 @@ use axum::{
 use eyre::WrapErr;
 
 use crate::{
-    db::user,
+    db,
     error::{ApiError, ApiResult},
     Db,
 };
 
-pub async fn get_many(State(db): State<Db>) -> ApiResult<Json<Vec<user::Data>>> {
+pub async fn get(State(db): State<Db>) -> ApiResult<Json<Vec<db::user::Data>>> {
     let users = db
         .user()
         .find_many(vec![])
@@ -23,10 +23,10 @@ pub async fn get_many(State(db): State<Db>) -> ApiResult<Json<Vec<user::Data>>> 
 pub async fn get_by_id(
     State(db): State<Db>,
     Path(id): Path<uuid::Uuid>,
-) -> ApiResult<Json<user::Data>> {
+) -> ApiResult<Json<db::user::Data>> {
     let user = db
         .user()
-        .find_unique(user::id::equals(id.to_string()))
+        .find_unique(db::user::id::equals(id.to_string()))
         .exec()
         .await
         .wrap_err("Failed to get user from the database")?;
@@ -39,7 +39,10 @@ pub struct PostReq {
     name: String,
 }
 
-pub async fn post(State(db): State<Db>, Json(req): Json<PostReq>) -> ApiResult<Json<user::Data>> {
+pub async fn post(
+    State(db): State<Db>,
+    Json(req): Json<PostReq>,
+) -> ApiResult<Json<db::user::Data>> {
     let user = db
         .user()
         .create(req.name, vec![])

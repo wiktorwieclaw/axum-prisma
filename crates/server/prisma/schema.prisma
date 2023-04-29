@@ -1,16 +1,14 @@
 datasource db {
     provider = "postgresql"
-    url      = "file:dev.db"
+    url      = env("DATABASE_URL")
 }
  
 generator client {
-    // Corresponds to the cargo alias created earlier
-    provider      = "cargo prisma"
-    // The location to generate the client. Is relative to the position of the schema
-    output        = "../src/db.rs"
+    provider = "cargo prisma"
+    output   = "../src/db.rs"
 }
  
 model User {
-    id          String  @id @default(uuid())
+    id           String  @id @default(uuid())
     display_name String
 }
