@@ -5,7 +5,6 @@ use std::{net::SocketAddr, sync::Arc};
 
 #[allow(warnings)]
 mod db;
-mod error;
 mod route;
 
 type Db = Arc<PrismaClient>;

@@ -6,11 +6,11 @@ use eyre::WrapErr;
 
 use crate::{
     db,
-    error::{ApiError, ApiResult},
+    route::{Error, Result},
     Db,
 };
 
-pub async fn get(State(db): State<Db>) -> ApiResult<Json<Vec<db::user::Data>>> {
+pub async fn get(State(db): State<Db>) -> Result<Json<Vec<db::user::Data>>> {
     let users = db
         .user()
         .find_many(vec![])
@@ -23,14 +23,14 @@ pub async fn get(State(db): State<Db>) -> ApiResult<Json<Vec<db::user::Data>>> {
 pub async fn get_by_id(
     State(db): State<Db>,
     Path(id): Path<uuid::Uuid>,
-) -> ApiResult<Json<db::user::Data>> {
+) -> Result<Json<db::user::Data>> {
     let user = db
         .user()
         .find_unique(db::user::id::equals(id.to_string()))
         .exec()
         .await
         .wrap_err("Failed to get user from the database")?;
-    let user = user.ok_or(ApiError::NotFound)?;
+    let user = user.ok_or(Error::NotFound)?;
     Ok(Json::from(user))
 }
 
@@ -39,10 +39,7 @@ pub struct PostReq {
     name: String,
 }
 
-pub async fn post(
-    State(db): State<Db>,
-    Json(req): Json<PostReq>,
-) -> ApiResult<Json<db::user::Data>> {
+pub async fn post(State(db): State<Db>, Json(req): Json<PostReq>) -> Result<Json<db::user::Data>> {
     let user = db
         .user()
         .create(req.name, vec![])
